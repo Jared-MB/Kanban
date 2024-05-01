@@ -20,9 +20,10 @@ import EditTask from "./edit-task";
 import RemoveTask from "./remove-task";
 
 export default function PendingTasks() {
-
-	const pendingTasks = useProject((state) => state.activeProject?.tasks.pending);
-	const { addTask, removeTask } = useTask()
+	const pendingTasks = useProject(
+		(state) => state.activeProject?.tasks.pending,
+	);
+	const { addTask, removeTask } = useTask();
 
 	const [taskId, setTaskId] = useState("");
 	const [openEditTask, setOpenEditTask] = useState(false);
@@ -39,13 +40,13 @@ export default function PendingTasks() {
 	};
 
 	const handleAdd = (task: TaskType) => {
-		addTask(task, 'progress');
-		removeTask(task._id, 'pending');
+		addTask(task, "progress");
+		removeTask(task._id, "pending");
 	};
 
 	return (
 		<CardBody className="h-[calc(100%-5rem)]">
-			{pendingTasks && pendingTasks.map((task) => (
+			{pendingTasks?.map((task) => (
 				<Task key={task._id}>
 					<TaskHeader className="justify-between">
 						<div className="flex items-center gap-x-4">
@@ -79,10 +80,14 @@ export default function PendingTasks() {
 						</Button>
 					</TaskHeader>
 					<TaskContent>
+						<p className="text-zinc-500 text-sm">{task.description ?? ""}</p>
 						<ul className="list-disc ml-7">
 							{task.subtasks.map((goal) => (
-								<li key={goal._id}>
+								<li key={goal._id} className="mb-1">
 									<Label>{goal.name}</Label>
+									<p className="text-zinc-500 text-xs">
+										{goal.description ?? ""}
+									</p>
 								</li>
 							))}
 						</ul>
@@ -96,7 +101,7 @@ export default function PendingTasks() {
 			/>
 			<RemoveTask
 				id={taskId}
-				from='pending'
+				from="pending"
 				removeTask={removeTask}
 				open={openRemoveTask}
 				onOpenChange={setOpenRemoveTask}

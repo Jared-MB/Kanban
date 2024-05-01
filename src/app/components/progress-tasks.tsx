@@ -10,10 +10,11 @@ import { Pause } from "lucide-react";
 import { useEffect } from "react";
 
 export default function ProgressTasks() {
-	const { addTask: regressTask } = useTask()
+	const { addTask: regressTask } = useTask();
 	const { addTask } = useTask();
 
-	const tasks = useProject((state) => state.activeProject?.tasks.progress) ?? [];
+	const tasks =
+		useProject((state) => state.activeProject?.tasks.progress) ?? [];
 	const { updateTaskStatus, removeTask } = useTask();
 
 	const handleRegress = (task: TaskType) => {
@@ -23,16 +24,16 @@ export default function ProgressTasks() {
 		}));
 
 		const updatedTask = { ...task, subtasks: uncompletedSubtasks };
-		regressTask(updatedTask, 'pending');
-		removeTask(task._id, 'progress');
+		regressTask(updatedTask, "pending");
+		removeTask(task._id, "progress");
 	};
 
 	useEffect(() => {
 		for (const task of tasks) {
 			const completed = task.subtasks.every((subtask) => subtask.completed);
 			if (completed) {
-				addTask(task, 'completed');
-				removeTask(task._id, 'progress');
+				addTask(task, "completed");
+				removeTask(task._id, "progress");
 			}
 		}
 	}, [tasks]);
@@ -54,16 +55,22 @@ export default function ProgressTasks() {
 						</Button>
 					</TaskHeader>
 					<TaskContent>
+						<p className="text-zinc-500 text-sm">{task.description ?? ""}</p>
+
 						{task.subtasks.map((subtask) => (
-							<CheckboxLabel
-								key={subtask._id}
-								defaultChecked={subtask.completed}
-								onCheckedChange={(checked) =>
-									updateTaskStatus(task._id, subtask._id, checked, 'progress')
-								}
-							>
-								{subtask.name}
-							</CheckboxLabel>
+							<div key={subtask._id} className="flex flex-col mb-1 gap-y-1">
+								<CheckboxLabel
+									defaultChecked={subtask.completed}
+									onCheckedChange={(checked) =>
+										updateTaskStatus(task._id, subtask._id, checked, "progress")
+									}
+								>
+									{subtask.name}
+								</CheckboxLabel>
+								<p className="text-zinc-500 text-xs ml-6">
+									{subtask.description ?? ""}
+								</p>
+							</div>
 						))}
 					</TaskContent>
 				</Task>
