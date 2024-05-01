@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
+import { Textarea } from "@/components/ui/textarea";
 import { useProject, useTask } from "@/store/useProject";
 import type { Task } from "@/types/task";
 import TaskValidator, {
@@ -26,9 +27,10 @@ export default function EditTask({
 	open,
 	onOpenChange,
 }: { id: string; open: boolean; onOpenChange: (open: boolean) => void }) {
-
-	const task = useProject((state) => state.activeProject?.tasks.pending.find((task) => task._id === id));
-	const { updateTask } = useTask()
+	const task = useProject((state) =>
+		state.activeProject?.tasks.pending.find((task) => task._id === id),
+	);
+	const { updateTask } = useTask();
 
 	const { register, handleSubmit, control, setValue } =
 		useForm<TaskTypeValidator>({
@@ -56,13 +58,14 @@ export default function EditTask({
 			subtasks,
 		};
 
-		updateTask(task as Task, 'pending');
+		updateTask(task as Task, "pending");
 		onOpenChange(false);
 	};
 
 	useEffect(() => {
 		if (task) {
 			setValue("title", task.title);
+			setValue("description", task.description || "");
 			setValue("subtasks", task.subtasks);
 		}
 	}, [task]);
@@ -88,6 +91,13 @@ export default function EditTask({
 							placeholder="Nombre de la tarea"
 						/>
 					</InputContainer>
+					<InputContainer>
+						<Label>Descripción de la tarea</Label>
+						<Textarea
+							{...register("description")}
+							placeholder="Descripción de la tarea"
+						/>
+					</InputContainer>
 					<Divider />
 					<div className="flex flex-col gap-y-4">
 						<div className="flex items-center justify-between">
@@ -102,23 +112,32 @@ export default function EditTask({
 							{fields.map((field, index) => (
 								<div
 									key={field.id}
-									className="flex flex-row gap-x-2 justify-between items-end"
+									className="flex flex-col gap-y-3 justify-between items-end"
 								>
+									<div className="flex flex-row gap-x-4 items-end w-full">
+										<InputContainer>
+											<Label>SubTarea {index + 1}</Label>
+											<Input
+												type="text"
+												{...register(`subtasks.${index}.name`)}
+												placeholder="Nombre de la sub tarea"
+											/>
+										</InputContainer>
+										<Button
+											size="icon"
+											type="button"
+											onClick={() => remove(index)}
+										>
+											<Trash className="w-4 h-4" />
+										</Button>
+									</div>
 									<InputContainer>
-										<Label>SubTarea {index + 1}</Label>
-										<Input
-											type="text"
-											{...register(`subtasks.${index}.name`)}
-											placeholder="Nombre de la sub tarea"
+										<Label>Descripción de la sub tarea</Label>
+										<Textarea
+											{...register(`subtasks.${index}.description`)}
+											placeholder="Descripción de la sub tarea"
 										/>
 									</InputContainer>
-									<Button
-										size="icon"
-										type="button"
-										onClick={() => remove(index)}
-									>
-										<Trash className="w-4 h-4" />
-									</Button>
 								</div>
 							))}
 						</div>
