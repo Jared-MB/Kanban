@@ -12,14 +12,15 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Task, TaskContent, TaskHeader, TaskTitle } from "@/components/ui/task";
-import { useCompletedTasks } from "@/store/useTasks";
+import { useProject, useTask } from "@/store/useProject";
 import { MoreVertical } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RemoveTask from "./remove-task";
 
 export default function CompletedTasks() {
-	const tasks = useCompletedTasks((state) => state.tasks);
-	const removeTask = useCompletedTasks((state) => state.removeTask);
+
+	const tasks = useProject((state) => state.activeProject?.tasks.completed) ?? [];
+	const { addTask, removeTask, updateTaskStatus } = useTask();
 
 	const [taskId, setTaskId] = useState("");
 	const [openRemoveTask, setOpenRemoveTask] = useState(false);
@@ -28,6 +29,16 @@ export default function CompletedTasks() {
 		setTaskId(id);
 		setOpenRemoveTask(true);
 	};
+
+	useEffect(() => {
+		for (const task of tasks) {
+			const completed = task.subtasks.every((subtask) => subtask.completed);
+			if (!completed) {
+				addTask(task, 'progress');
+				removeTask(task._id, 'completed');
+			}
+		}
+	}, [tasks]);
 
 	return (
 		<CardBody>
@@ -44,9 +55,6 @@ export default function CompletedTasks() {
 							<DropdownMenuContent>
 								<DropdownMenuLabel>Opciones</DropdownMenuLabel>
 								<DropdownMenuSeparator />
-								{/* <DropdownMenuItem onClick={() => handleEdit(task._id)}>
-										Editar
-									</DropdownMenuItem> */}
 								<DropdownMenuItem onClick={() => handleRemove(task._id)}>
 									Eliminar
 								</DropdownMenuItem>
@@ -58,9 +66,9 @@ export default function CompletedTasks() {
 							<CheckboxLabel
 								key={subtask._id}
 								defaultChecked={subtask.completed}
-								// onCheckedChange={(checked) =>
-								// 	updateTaskStatus(task._id, subtask._id, checked)
-								// }
+								onCheckedChange={(checked) =>
+									updateTaskStatus(task._id, subtask._id, checked, 'completed')
+								}
 							>
 								{subtask.name}
 							</CheckboxLabel>
@@ -69,6 +77,7 @@ export default function CompletedTasks() {
 				</Task>
 			))}
 			<RemoveTask
+				from="completed"
 				removeTask={removeTask}
 				id={taskId}
 				open={openRemoveTask}

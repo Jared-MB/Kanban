@@ -15,15 +15,17 @@ export default function RemoveTask({
 	id,
 	onOpenChange,
 	removeTask,
+	from
 }: {
 	open: boolean;
 	id: string;
+	from : 'pending' | 'progress' | 'completed';
 	onOpenChange: (open: boolean) => void;
-	removeTask: (id: string) => void;
+	removeTask: (id: string, status: 'pending' | 'completed' | 'progress') => void;
 }) {
 	const handleRemove = (id: string) => {
 		onOpenChange(false);
-		removeTask(id);
+		removeTask(id, from);
 	};
 
 	return (

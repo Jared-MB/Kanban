@@ -1,9 +1,9 @@
 "use client";
 
-import { usePendingTasks } from "@/store/useTasks";
+import { useProject } from "@/store/useProject";
 
 export default function PendingTasksCounter() {
-	const tasks = usePendingTasks((state) => state.tasks);
+	const tasks = useProject((state) => state.activeProject?.tasks.pending) ?? [];
 
 	return <span className="text-lg">{tasks.length}</span>;
 }

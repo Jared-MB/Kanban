@@ -1,9 +1,9 @@
 "use client";
 
-import { useProgressTasks } from "@/store/useTasks";
+import { useProject } from "@/store/useProject";
 
 export default function ProgressTasksCounter() {
-	const tasks = useProgressTasks((state) => state.tasks);
+	const tasks = useProject((state) => state.activeProject?.tasks.pending) ?? [];
 
 	return <span className="text-lg">{tasks.length}</span>;
 }

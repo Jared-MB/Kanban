@@ -10,10 +10,10 @@ import {
 import { Divider } from "@/components/ui/divider";
 import { Input, InputContainer } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { usePendingTasks } from "@/store/useTasks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
+import { useProject, useTask } from "@/store/useProject";
 import type { Task } from "@/types/task";
 import TaskValidator, {
 	type Task as TaskTypeValidator,
@@ -26,10 +26,9 @@ export default function EditTask({
 	open,
 	onOpenChange,
 }: { id: string; open: boolean; onOpenChange: (open: boolean) => void }) {
-	const task = usePendingTasks((state) =>
-		state.tasks.find((task) => task._id === id),
-	);
-	const updateTask = usePendingTasks((state) => state.updateTask);
+
+	const task = useProject((state) => state.activeProject?.tasks.pending.find((task) => task._id === id));
+	const { updateTask } = useTask()
 
 	const { register, handleSubmit, control, setValue } =
 		useForm<TaskTypeValidator>({
@@ -57,7 +56,7 @@ export default function EditTask({
 			subtasks,
 		};
 
-		updateTask(id, task as Task);
+		updateTask(task as Task, 'pending');
 		onOpenChange(false);
 	};
 

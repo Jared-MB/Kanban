@@ -1,8 +1,8 @@
 "use client";
-import { useCompletedTasks } from "@/store/useTasks";
+import { useProject } from "@/store/useProject";
 
 export default function CompletedTasksCounter() {
-	const tasks = useCompletedTasks((state) => state.tasks);
+	const tasks = useProject((state) => state.activeProject?.tasks.completed) ?? [];
 
 	return <span className="text-lg">{tasks.length}</span>;
 }

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Task, TaskContent, TaskHeader, TaskTitle } from "@/components/ui/task";
-import { usePendingTasks, useProgressTasks } from "@/store/useTasks";
+import { useProject, useTask } from "@/store/useProject";
 import type { Task as TaskType } from "@/types/task";
 import { MoreVertical, Play } from "lucide-react";
 import { useState } from "react";
@@ -20,10 +20,9 @@ import EditTask from "./edit-task";
 import RemoveTask from "./remove-task";
 
 export default function PendingTasks() {
-	const addTask = useProgressTasks((state) => state.addTask);
 
-	const removeTask = usePendingTasks((state) => state.removeTask);
-	const pendingTasks = usePendingTasks((state) => state.tasks);
+	const pendingTasks = useProject((state) => state.activeProject?.tasks.pending);
+	const { addTask, removeTask } = useTask()
 
 	const [taskId, setTaskId] = useState("");
 	const [openEditTask, setOpenEditTask] = useState(false);
@@ -40,13 +39,13 @@ export default function PendingTasks() {
 	};
 
 	const handleAdd = (task: TaskType) => {
-		addTask(task);
-		removeTask(task._id);
+		addTask(task, 'progress');
+		removeTask(task._id, 'pending');
 	};
 
 	return (
 		<CardBody className="h-[calc(100%-5rem)]">
-			{pendingTasks.map((task) => (
+			{pendingTasks && pendingTasks.map((task) => (
 				<Task key={task._id}>
 					<TaskHeader className="justify-between">
 						<div className="flex items-center gap-x-4">
@@ -74,6 +73,7 @@ export default function PendingTasks() {
 							className="w-8 h-8"
 							variant="outline"
 							onClick={() => handleAdd(task)}
+							title='Mover a "En progreso"'
 						>
 							<Play className="w-4 h-4" />
 						</Button>
@@ -96,6 +96,7 @@ export default function PendingTasks() {
 			/>
 			<RemoveTask
 				id={taskId}
+				from='pending'
 				removeTask={removeTask}
 				open={openRemoveTask}
 				onOpenChange={setOpenRemoveTask}

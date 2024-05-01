@@ -7,10 +7,10 @@ import {
 	ProgressSection,
 	ProgressValue,
 } from "@/components/ui/progress";
-import { useProgressTasks } from "@/store/useTasks";
+import { useProject } from "@/store/useProject";
 
 export default function ProgressTasksBar() {
-	const tasks = useProgressTasks((state) => state.tasks);
+	const tasks = useProject((state) => state.activeProject?.tasks.progress) ?? [];
 
 	const totalTasks = tasks.reduce((acc, task) => {
 		return acc + task.subtasks.length;

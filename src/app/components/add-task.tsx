@@ -18,16 +18,21 @@ import { Plus, Trash } from "lucide-react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { usePendingTasks } from "@/store/useTasks";
+import { useProject, useTask } from "@/store/useProject";
+import { Project } from "@/types/project";
 import type { Subtasks, Task } from "@/types/task";
 import { useEffect, useState } from "react";
 import { type SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function AddTask() {
-	const [open, setOpen] = useState(false);
+	const activeProject = useProject((state) => state.activeProject);
+	const setActiveProject = useProject((state) => state.setActiveProject);
+	const addProject = useProject((state) => state.addProject);
 
-	const addTask = usePendingTasks((state) => state.addTask);
+	const {addTask} = useTask();
+
+	const [open, setOpen] = useState(false);
 
 	const {
 		register,
@@ -48,17 +53,23 @@ export default function AddTask() {
 		append({ name: "", completed: false });
 	};
 
-	const handleOpenChange = (open: boolean) => {
-		if (!open) {
-			resetField("title");
-			resetField("subtasks");
-		}
-		setOpen(open);
-	};
-
 	const onSubmit: SubmitHandler<TaskTypeValidator> = (
 		data: TaskTypeValidator,
 	) => {
+		if (!activeProject?._id){
+			const _id = self.crypto.randomUUID();
+			const project: Project = {
+				_id,
+				name: "Proyecto 1",
+				tasks: {
+					completed: [],
+					pending: [],
+					progress: [],
+				},
+			};
+			addProject(project);
+			setActiveProject(project);
+		}
 		const subtasks = data.subtasks.map((subtask) => ({
 			...subtask,
 			_id: self.crypto.randomUUID(),
@@ -70,8 +81,13 @@ export default function AddTask() {
 			_id: self.crypto.randomUUID(),
 		};
 
-		addTask(task);
+		addTask(task, 'pending');
 		setOpen(false);
+		resetField("title");
+		resetField("subtasks");
+		for (let i = 0; i < fields.length; i++) {
+			remove(i);
+		}
 	};
 
 	useEffect(() => {
@@ -84,9 +100,9 @@ export default function AddTask() {
 	}, [errors]);
 
 	return (
-		<Dialog open={open} onOpenChange={handleOpenChange}>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button size="icon" variant="outline">
+				<Button size="icon" variant="outline" title="Agregar tarea">
 					<Plus className="w-4 h-4" />
 				</Button>
 			</DialogTrigger>
