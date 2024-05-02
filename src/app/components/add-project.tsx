@@ -18,7 +18,7 @@ import { forwardRef, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const AddProject = forwardRef(
-	({ showTrigger = false }: { showTrigger: boolean }, _ref) => {
+	({ showTrigger = false }: { showTrigger?: boolean }, _ref) => {
 		const [open, setOpen] = useState(false);
 
 		const activeProject = useProject((state) => state.activeProject);
