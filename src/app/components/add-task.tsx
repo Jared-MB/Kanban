@@ -78,6 +78,7 @@ export default function AddTask() {
 
 		const task: Task = {
 			title: data.title,
+			description: data.description,
 			subtasks: subtasks as Subtasks[],
 			_id: self.crypto.randomUUID(),
 		};
