@@ -1,20 +1,9 @@
-import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import { quicksand } from "@/utils/fonts";
-import { Menu } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import AddProject from "./components/add-project";
-import ChangeProject from "./components/change-project";
+import Menu from "./components/menu";
 import ProjectName from "./components/project-name";
 import "./globals.css";
 
@@ -48,23 +37,7 @@ export default function RootLayout({
 					</div>
 					<div className="flex flex-row gap-x-4 items-center">
 						<ProjectName />
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="outline" size="icon">
-									<Menu />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent>
-								<DropdownMenuLabel>Opciones</DropdownMenuLabel>
-								<DropdownMenuSeparator />
-								<DropdownMenuItem asChild>
-									<AddProject showTrigger />
-								</DropdownMenuItem>
-								<DropdownMenuItem asChild>
-									<ChangeProject />
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+						<Menu />
 					</div>
 				</header>
 				{children}
