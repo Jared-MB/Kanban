@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { useProject } from "@/store/useProject";
 import type { Project } from "@/types/project";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 
-export default function ChangeProject() {
+const ChangeProject = forwardRef((_, _ref) => {
 	const projects = useProject((state) => state.projects);
 
 	const setActiveProject = useProject((state) => state.setActiveProject);
@@ -60,4 +60,6 @@ export default function ChangeProject() {
 			</DialogContent>
 		</Dialog>
 	);
-}
+});
+
+export default ChangeProject;
